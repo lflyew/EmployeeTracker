@@ -27,4 +27,4 @@ VALUES ("Spider", "Man", 1, 23),
        ("Dare", "Devil", 7, 23),
        ("Bucky", "Barnes", 8, 1),
        ("Jean", "Grey", 9, 23),
-       ("Spider", "Man", 10, 5);
+       ("Scarlet", "Witch", 10, 5);
