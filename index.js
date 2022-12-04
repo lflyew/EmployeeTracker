@@ -57,6 +57,75 @@ function init() {
             case "Add A Department":
                 addDepartment();
                 break;
+
+                case "Add A Department":
+                addDepartment();
+                break;
+
+                case "Add A Role":
+                addRole();
+                break;
+
+                case "Add An Employee":
+                addEmployee();
+                break;
+
+                case "View Department":
+                viewDepartment();
+                break;
+
+                case "View Roles":
+                viewRole();
+                break;
+
+                case "View Employees":
+                viewEmployee();
+                break;
+
+                case "View Total Budget Utilization":
+                viewBudget();
+                break;
+
+                case "View Employees With The Same Manager":
+                viewManager();
+                break;
+
+                case "View Employees By Department":
+                viewEmpDep();
+                break;
+
+                case "Update Employees Role":
+                updateRole();
+                break;
+
+                case "Update An Employees Manager":
+                updateManager();
+                break;
+
+                case "Delete A Department":
+                deleteDepartment();
+                break;
+
+                case "Delete A Role":
+                deleteRole();
+                break;
+
+                case "Delete An Employee":
+                deleteEmployee();
+                break;
+
+                case "Exit!":
+                    db.end
+
+                console.log("Thanks For Using Employee Tracker!")
+
+                //View Departments
+
+                
+
+
+
+                
         }
     })
 }
