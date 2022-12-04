@@ -119,10 +119,53 @@ function init() {
 
                 console.log("Thanks For Using Employee Tracker!")
 
-                //View Departments
+     //View Departments
 
-                
+function viewDepartment () {
 
+    const sql = `Select * From Department`;
+    db.query (sql, (err,result) =>{
+        if(err) throw err;
+        console.table(result);
+        init();
+    });
+}
+
+//View Roles
+
+function viewRole () {
+    const sql = `Select role.id,title, department.name AS department,salary 
+    FROM role 
+    LEFT JOIN department
+    ON role.department_id = department.id
+    ORDERE BY role.id;`;
+    db.query (sql, (err,result) => {
+        if (err) throw err;
+        console.table(result);
+        init();
+    });
+}
+
+//View Employees
+
+function viewEmployee() {
+    const sql = `Select employee.id,employee.first_name,employee.last_name,title,name AS department,salary,
+     CONCAT(e.first_name," ",e.last_name) AS manager
+     FROM employee
+     LEFT JOIN role
+     ON employee.role_id = role.id
+     LEFT JOIN department
+     ON role.department_id = department.id
+     LEFT JOIN employee e
+     ON employee.manager_id = e.id
+     ORDER BY employee.id;`;
+     db.query (sql, (err,result) => {
+        if(err) throw err;
+        console.table(result);
+            init();
+     });
+
+}
 
 
                 
