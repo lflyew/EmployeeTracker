@@ -244,7 +244,14 @@ function addDepartment () {
 
         )
     };
-                
+    // Add Employee
+
+    function addEmployee ()
+    {
+        db.query (
+            
+        )
+    }
         }
     })
 }
