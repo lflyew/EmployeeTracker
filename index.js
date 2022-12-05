@@ -166,8 +166,84 @@ function viewEmployee() {
      });
 
 }
+//Add Department to Database
 
+function addDepartment () {
+    inquirer.prompt({
+        name: 'newDepartment',
+        type: 'input',
+        message: 'What Department Would You Like To Add?'
+    }).then(function (answer) {
+        db.query(
+            "ALTER TABLE department AUTO_INCREMENT = 1; INSERT INTO department SET ?",
+            {
+                name: answer.newDepartment
+            }
+        );
+        const sql = 'SELECT * FROM department';
+        db.query(sql, function(err, res) {
+            if(err)throw err;
+            console.log(answer.newDepartment + ' has been added!!');
+            console.table("All Dapartments: ", res);
+            init();
+        })
+    })
+}
 
+//Add Role
+
+    function addRole () {
+        db.query ( 'SELECT * FROM department' , (err, result) =>{
+            if(err) throw err;
+            inquirer.prompt([
+                {
+                    name: 'role',
+                    type: 'input',
+                    message: 'What Role Would You Like To Add?',
+                },
+                {
+                    name: 'salary',
+                    type: 'input',
+                    message: 'What Is Salary For The Role?',
+                    validate: input => {
+                        if (isNaN(input)) {
+                            console.log ('Please enter number!')
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
+                        }
+                    },
+                    {
+                        name: 'department',
+                        type: 'list',
+                        message: "What Department Does Role Belong To?",
+                        choices: () =>
+                        result.map((result) => result.name),
+                    }
+                
+            ])
+            .then(function (answers) {
+                const DepartmentId = result.filter((result) => result.name === answers.department) [0].id;
+                db.query(
+                    'ALTER TABLE role AUTO_INCREMENT = 1; INSERT INTO role SET ?',
+                    {
+                        title: answers.role,
+                        salary: answers.salary,
+                        DepartmentId: DepartmentId
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log(answers.role + ' Successfully Added To Roles Under' + answers.department);
+                        init();
+                    }
+                );
+            });
+        }
+
+        )
+    };
                 
         }
     })
