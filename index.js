@@ -175,12 +175,12 @@ function addDepartment () {
         message: 'What Department Would You Like To Add?'
     }).then(function (answer) {
         db.query(
-            "ALTER TABLE department AUTO_INCREMENT = 1; INSERT INTO department SET ?",
+            `ALTER TABLE department AUTO_INCREMENT = 1; INSERT INTO department SET ?`,
             {
                 name: answer.newDepartment
             }
         );
-        const sql = 'SELECT * FROM department';
+        const sql = `SELECT * FROM department`;
         db.query(sql, function(err, res) {
             if(err)throw err;
             console.log(answer.newDepartment + ' has been added!!');
@@ -193,7 +193,7 @@ function addDepartment () {
 //Add Role
 
     function addRole () {
-        db.query ( 'SELECT * FROM department' , (err, result) =>{
+        db.query ( `SELECT * FROM department` , (err, result) =>{
             if(err) throw err;
             inquirer.prompt([
                 {
@@ -249,10 +249,242 @@ function addDepartment () {
     function addEmployee ()
     {
         db.query (
-            
+            `SELECT DISTINT title, id FROM role`, (err,role_result) => {
+                if (err) throw err;
+                db.query (
+                    `SELECT DISTINCT CONCAT(e.first_name." ",e.last_name) AS mananager_name,e,id
+                    FROM employee
+                    LEFT JOIN employee e
+                    ON employee.manager_id = e.id
+                    WHERE employee.manager_id IS NOT NULL`, (err,manager_result) => 
+                    {
+                        if (err) throw err;
+                        inquirer.prompt([
+                            {
+                                name: "first_name",
+                                type: 'input',
+                                message: "What Is Employee's First Name?",
+                            },
+                            {
+                                name: "last_name",
+                                type: 'input',
+                                message: "What Is Employee's Last Name?",
+                            },
+                            {
+                                name: "role",
+                                type: 'list',
+                                message: "What Is Employee's Role?",
+                                choices: () =>
+                                role_result.nap((role_result) => role_result.title),
+                            },
+                            {
+                                name: "manager",
+                                type: 'list',
+                                message: "Who Is Employee's Manager?",
+                                choices: () =>
+                                manager_result.map((manager_result) => manager_result.manager_name),
+                            }
+
+                        ])
+                        .then(function (answers) {
+                            const ManagerId = manager_result.filter((manager_result) => manager_result.manager_name === answers.manager) [0].id;
+                            const RoleId = role_result.filter((role_result) => role_result.title === answers.role) [0].id;
+                            db.query(
+                                'ALTER TABLE employee AUTO_INCREMENT = 1; INSERT INTO employee SET ?',
+                                {
+                                    first_name: answers.first_name,
+                                    last_name: answers.last_name,
+                                    role_id: RoleId,
+                                    manager_id: ManagerId
+                                },
+                                function (err) {
+                                    if (err) throw err;
+                                    console.log(answers.first_name + ' ' + answers.last_name + ' Is Successfully Added!!');
+                                    init();
+                                }
+
+                            );
+                        
+                    }
+                );
+            }
+
         )
     }
-        }
+        )
+    };
+//Update role
+
+function updateRole () {
+    db.query(`SELECT * FROM employee`, (err, employee_result) => {
+        if (err) throw err;
+        db.query(`SELECT * FROM role`, (err, role_result) => {
+            if (err) throw err;
+            inquirer.prompt([
+                {
+                    name: 'employee',
+                    type: 'list',
+                    message: 'Which Employee Would You Like To Update?',
+                    choices: () =>
+                    employee_result.map(
+                        (employee_result) => employee_result.first_name + ' ' +employee_result.last_name
+                    ),
+                },
+                {
+                    name: 'role',
+                    type: 'list',
+                    message: 'Which Role Would You Like To Assign To Selected Employee?',
+                    choices: () =>
+                   role_result.map(
+                        (role_result) => role_result.title
+                    ),
+                },
+            ])
+            .then((answers) => {
+                const RoleId = role_result.filter((role_result) => role_result.title === answers.role)[0].id;
+                const EmpId = employee_result.filter((employee_result) => employee_result.first_name + ' ' + employee_result.last_name === answers.employee)[0].id;
+                db.query(
+                    `UPDATE employee SET ? WHERE ?`
+                    [{
+                        role_id: RoleId
+                    },
+                    {
+                        id: EmpId
+                    
+                }],
+                function (err) {
+                    if (err) throw err;
+                    console.log(answers.employee + "'s Role Is Successfully Updated!");
+                    init();
+                }
+                );
+
+            });
+        })
     })
 }
+//Update Employee manager
+function updateManager () {
+    db.query(`SELECT DISTINCT CONCAT(e.first_name," ",e.last_name) AS manager_name,e.id
+    FROM employee
+    LEFT JOIN employee e
+    ON employee.manager_id = e.id
+    WHERE employee.manager_id IS NOT NULL`, (err, manager_result) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                name: 'employee',
+                type: "list",
+                message: 'Which Employee Would You Like To Update?',
+                choices: () =>
+                employee_result.map(
+                    (employee_result) => employee_result.first_name + " " + employee_result.last_name
+                ),
+            },
+            {
+                name:"manager",
+                type:'list',
+                message: "Who Is Employee's New Manager?",
+                choices: () =>
+                manager_result.map(
+                    (manager_result) => manager_result.manager_name
+                ),
+            },
+        ])
+        .then((answers) => {
+            const ManagerId = manager_result.filter((manager_result) => manager_result.manager_name === answers.manager)[0].id;
+            const EmpId = employee_result.filter((employee_result) => employee_result.first_name + " " + employee_result.last_name === answers.employee)[0].id;
+            db.query (
+                `UPDATE employee SET ? WHERE ?`,
+                [{
+                    manager_id: ManagerId
+                },
+            {
+                id: EmpId
+            }],
+            function (err) {
+                if (err) throw err;
+                console.log(answers.employee + "'s Manger Is Successfully Updated!!");
+                init();
+            }
+            );
+        });
+    })
 
+})
+};
+
+function viewEmpByMan () {
+    db.query (
+        `SELECT DISTINCT CONCAT(e.first_name," ",e.last_name) AS manager_name
+        FROM employee
+        LEFT JOIN employee e 
+        ON employee.manager_id = e.id
+        WHERE employee.manager_id IS NOT NULL`, (err,result) => {
+            if (err) throw err;
+            inquirer.prompt({
+                name: 'manager',
+                type: 'list',
+                message: "Which Manager's Team Would You Like To View?",
+                choice: () =>
+                result.map((result) => result.manager_name),
+            })
+            .then ((answer) => {
+               db.query (
+                    `SELECT employee.id,employee.first_name,employee.last_name,title,name AS department,salary
+                    FROM employee
+                    LEFT JOIN role
+                    ON employee.role_id = role.id
+                    LEFT JOIN department
+                    ON role.department_id = department.id
+                    LEFT JOIN employee e 
+                    ON employee.manager_id = e.id
+                    WHERE CONCAT(e.first_name," ",e.last_name) = "${answer.manager}"
+                    ORDER BY employee.role_id`, (err,finResult) =>{
+                        if (err) throw err;
+                        console.table(answer.manager + "'s Team: ", finResult);
+                        init();
+                    } 
+                )
+            })
+        }
+    )
+}
+
+//View Emp By Dep
+
+function viewEmpByDep () {
+    db.query (
+        `SELECT DISTINCT name FROM department`, (err,result) =>{
+            if (err) throw err;
+            inquirer.prompt({
+                name: 'department',
+                type: 'list',
+                message: "Which Department Would You Like To View?",
+                choices: () =>
+                result.map((result) => result.name),
+            })
+            .then ((answer) => {
+                db.query (
+                    `SELECT employee.id,employee.first_name,employee.last_name,title,name AS department,salary,
+                    CONCAT(e.first_name," ",e.last_name) as manager
+                    FROM employee
+                    LEFT JOIN role
+                    ON employee.role_id = role.id
+                    LEFT JOIN department
+                    ON role.department_id = department.id
+                    LEFT JOIN employee e 
+                    ON employee.manager_id = e.id
+                    WHERE name = "${answer.department}"
+                    ORDER BY employee.role_id`, (err,finResult) =>{
+                        if (err) throw err;
+                        console.table("Employees Under " + answer.department + " Department: ", finResult);
+                        init();
+                    }
+                )
+            })
+        }
+    )
+}
+
+//DELETE
