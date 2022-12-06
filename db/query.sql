@@ -61,8 +61,10 @@ SELECT DISTINCT name from department
 SELECT name AS department, SUM(salary) AS utilized_budget
 FROM employee
 LEFT JOIN role
+ON employee.role_id = role.id
+LEFT JOIN department
 ON role.department_id = department.id
-WHERE name = department_name_user_input
+WHERE name = department_name_input
 GROUP BY name
 
 ALTER TABLE department AUTO_INCREMENT = 1
@@ -102,7 +104,8 @@ WHERE employee.manager_id IS NOT NULL
 INSERT INTO employee SET
 first_name = user_input_first_name,
 last_name = user_input_last_name,
-role_id = roleID(user_choose_manager_id)
+role_id = roleID(user_choose_role_id),
+manager_id = managerID(user_choose_manager_id)
 
 --delete employee
 

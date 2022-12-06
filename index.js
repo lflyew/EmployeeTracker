@@ -3,23 +3,23 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 
-const consoleTable = require ('console.table');
+const consoleTable = require ("console.table");
 
 //db connect
 const db = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
-        password: 'password',
+        password: 'Hailey23!',
         database: "companyemp_db"
     },
-    console.log('Connected to companyemp database.')
+    console.log(`Connected to companyemp database.`)
 
 );
 // connects to sql database
 
 db.connect(function(err){
-    if(err) throw err;
+    if (err) throw err;
     console.log('connected as id ${db.threadId}');
     console.log("=====================================")
     console.log("||                                 ||")
@@ -27,7 +27,7 @@ db.connect(function(err){
     console.log("||                                 ||")
     console.log("=====================================")
 init();
-});
+})
 
 function init() {
     inquirer.prompt ({
@@ -52,13 +52,10 @@ function init() {
             "Exit",
         ],
 
-    }) .then(function(answer){
+    }) 
+    .then(function(answer){
         switch (answer.action){
             case "Add A Department":
-                addDepartment();
-                break;
-
-                case "Add A Department":
                 addDepartment();
                 break;
 
@@ -70,7 +67,7 @@ function init() {
                 addEmployee();
                 break;
 
-                case "View Department":
+                case "View Departments":
                 viewDepartment();
                 break;
 
@@ -117,15 +114,18 @@ function init() {
                 case "Exit!":
                     db.end
 
-                console.log("Thanks For Using Employee Tracker!")
+                console.log("Thanks For Using Employee Tracker!");
+                break;
+        }
+    })}
 
      //View Departments
 
 function viewDepartment () {
 
-    const sql = `Select * From Department`;
+    const sql = `SELECT * From Department`;
     db.query (sql, (err,result) =>{
-        if(err) throw err;
+        if (err) throw err;
         console.table(result);
         init();
     });
@@ -134,11 +134,11 @@ function viewDepartment () {
 //View Roles
 
 function viewRole () {
-    const sql = `Select role.id,title, department.name AS department,salary 
+    const sql = `SELECT role.id,title, department.name AS department,salary 
     FROM role 
     LEFT JOIN department
     ON role.department_id = department.id
-    ORDERE BY role.id;`;
+    ORDER BY role.id;`;
     db.query (sql, (err,result) => {
         if (err) throw err;
         console.table(result);
@@ -149,7 +149,7 @@ function viewRole () {
 //View Employees
 
 function viewEmployee() {
-    const sql = `Select employee.id,employee.first_name,employee.last_name,title,name AS department,salary,
+    const sql = `SELECT employee.id,employee.first_name,employee.last_name,title,name AS department,salary,
      CONCAT(e.first_name," ",e.last_name) AS manager
      FROM employee
      LEFT JOIN role
@@ -160,7 +160,7 @@ function viewEmployee() {
      ON employee.manager_id = e.id
      ORDER BY employee.id;`;
      db.query (sql, (err,result) => {
-        if(err) throw err;
+        if (err) throw err;
         console.table(result);
             init();
      });
@@ -411,10 +411,9 @@ function updateManager () {
         });
     })
 
-})
-};
+}
 
-function viewEmpByMan () {
+function viewManager () {
     db.query (
         `SELECT DISTINCT CONCAT(e.first_name," ",e.last_name) AS manager_name
         FROM employee
@@ -453,7 +452,7 @@ function viewEmpByMan () {
 
 //View Emp By Dep
 
-function viewEmpByDep () {
+function viewEmpDep () {
     db.query (
         `SELECT DISTINCT name FROM department`, (err,result) =>{
             if (err) throw err;
@@ -568,7 +567,7 @@ function deleteEmployee() {
 
 //Total Budget
 
-function Budget () {
+function viewBudget () {
     db.query ( `SELECT DISTINCT name from department`, (err,result) => {
         if (err) throw err;
         inquirer.prompt({
