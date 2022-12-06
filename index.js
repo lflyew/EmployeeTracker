@@ -487,4 +487,109 @@ function viewEmpByDep () {
     )
 }
 
-//DELETE
+//DELETE DEP
+
+
+function deleteDepartment () {
+    db.query('SELECT DISTINCT name FROM department', (err, result) => {
+        if (err) throw err;
+        inquirer.prompt({
+            name: 'department',
+            type: 'list',
+            message: "Which Department Do You Want To Delete?",
+            choices: () =>
+            result.map((result) => result.name)
+
+        })
+        .then ((answer) => {
+            db.query(`SET FOREIGN_KEY_CHECKS=0;
+            DELETE FROM department WHERE ?`,  {name: answer.department},
+            (err, result) => {
+                if (err) throw err;
+                console.log(
+                    "Successfully deleted " + answer.department + "department."
+                    
+                );
+                init();
+            });
+        })
+    })
+}
+//DELETE ROLE
+
+function deleteRole () {
+    db.query("SELECT DISTINCT title FROM role", (err, result) => {
+        if (err) throw err;
+       inquirer.prompt({
+        name: 'title',
+        type: 'list',
+        message: "Which Role Would You Like To Delete?",
+        choices: () =>
+        result.map((result) => result.title)
+       }) 
+       .then ((answer) => {
+        db.query(`SET FOREIGN_KEY_CHECKS=0;
+        DELETE FROM role WHERE ?`, {title: answer.title},
+        (err, result) => {
+            if (err) throw err;
+            console.log(
+                "You Have Successfully Deleted The " + answer.title + " role."
+            );
+            init();
+        });
+       })
+    })
+}
+
+// delete employees
+
+function deleteEmployee() {
+    db.query("SELECT DISTINCT CONCAT(first_name, ' ',last_name) AS full_name FROM employee", (err, result) => {
+        if (err) throw err;
+        inquirer.prompt({
+            name: "full_name",
+            type: 'list',
+            message: "Which Employee Would You Like To Delete?",
+            choices: () =>
+            result.map((result) => result.full_name)
+        })
+        .then ((answer) => {
+            console.log(answer.full_name)
+            db.query(`SET FOREIGN_KEY_CHECKS=0;
+            DELETE FROM employee WHERE CONCAT(first_name, ' ',last_name) = "${answer.full_name}"`,
+            (err, result) => {
+                if (err) throw err;
+                console.log( "Successfully Deleted Employee " + answer.full_name + ".");
+                init();
+            });
+        })
+    })
+}
+
+//Total Budget
+
+function Budget () {
+    db.query ( `SELECT DISTINCT name from department`, (err,result) => {
+        if (err) throw err;
+        inquirer.prompt({
+            name: 'department',
+            type: 'list',
+            message: "Which Department Would You Like To View?",
+            choices: () => result.map((result) => result.name),
+        })
+        .then ((answer) => {
+            db.query ( `SELECT name AS department, SUM(salary) AS utilized_Budget
+            FROM employee
+            LEFT JOIN role
+            ON employee.role_id = role.id
+            LEFT JOIN department
+            ON role.department_id = department.id
+            WHERE name = "${answer.department}"
+            GROUP BY name`, (err,finResult) => {
+                if(err) throw err;
+                console.table("The Total Salary/Budget Of All Emloyees in " + answer.department + " department is:", finResult);
+                init();
+            })
+        })
+    })
+}
