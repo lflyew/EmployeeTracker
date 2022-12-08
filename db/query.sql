@@ -9,7 +9,7 @@ ORDER BY role.id;
 --View Employees
 
 SELECT employee.id,employee.first_name,employee.last_name,title,name AS department,salary, 
-CONCAT(e.first_name," "e.last_name) AS manager_id
+CONCAT(e.first_name," "e.last_name) AS manager
 FROM employee
 LEFT JOIN role 
 ON employee.role_id = role.role_id
@@ -25,7 +25,7 @@ ORDER BY employee.role_id;
 
 
 SELECT DISTINCT CONCAT(e.first_name," ",e.last_name) AS manager_name
-FROM Employees
+FROM employee
 LEFT JOIN employee e
 ON employee.manager_id = e.id
 WHERE employee.manager_id IS NOT NULL

@@ -3,7 +3,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 
-const consoleTable = require ("console.table");
+const consoleTables = require ("console.table");
 
 //db connect
 const db = mysql.createConnection(
@@ -112,7 +112,7 @@ function init() {
                 break;
 
                 case "Exit!":
-                    db.end
+                    db.end();
 
                 console.log("Thanks For Using Employee Tracker!");
                 break;
@@ -180,7 +180,7 @@ function addDepartment () {
                 name: answer.newDepartment
             }
         );
-        const sql = `SELECT * FROM department`;
+        const sql = 'SELECT * FROM department';
         db.query(sql, function(err, res) {
             if(err)throw err;
             console.log(answer.newDepartment + ' has been added!!');
@@ -197,8 +197,8 @@ function addDepartment () {
             if(err) throw err;
             inquirer.prompt([
                 {
-                    name: 'role',
-                    type: 'input',
+                    name: "role",
+                    type: "input",
                     message: 'What Role Would You Like To Add?',
                 },
                 {
@@ -231,7 +231,7 @@ function addDepartment () {
                     {
                         title: answers.role,
                         salary: answers.salary,
-                        DepartmentId: DepartmentId
+                        department_id: DepartmentId
                     },
                     function (err) {
                         if (err) throw err;
@@ -275,7 +275,7 @@ function addDepartment () {
                                 type: 'list',
                                 message: "What Is Employee's Role?",
                                 choices: () =>
-                                role_result.nap((role_result) => role_result.title),
+                                role_result.map((role_result) => role_result.title),
                             },
                             {
                                 name: "manager",
@@ -327,7 +327,7 @@ function updateRole () {
                     message: 'Which Employee Would You Like To Update?',
                     choices: () =>
                     employee_result.map(
-                        (employee_result) => employee_result.first_name + ' ' +employee_result.last_name
+                        (employee_result) => employee_result.first_name + ' ' + employee_result.last_name
                     ),
                 },
                 {
@@ -365,6 +365,8 @@ function updateRole () {
 }
 //Update Employee manager
 function updateManager () {
+    db.query(`SELECT * FROM employee`, (err, employee_result) => {
+        if (err) throw err;
     db.query(`SELECT DISTINCT CONCAT(e.first_name," ",e.last_name) AS manager_name,e.id
     FROM employee
     LEFT JOIN employee e
@@ -411,7 +413,8 @@ function updateManager () {
         });
     })
 
-}
+})
+};
 
 function viewManager () {
     db.query (
@@ -568,7 +571,7 @@ function deleteEmployee() {
 //Total Budget
 
 function viewBudget () {
-    db.query ( `SELECT DISTINCT name from department`, (err,result) => {
+    db.query (`SELECT DISTINCT name from department`, (err,result) => {
         if (err) throw err;
         inquirer.prompt({
             name: 'department',
