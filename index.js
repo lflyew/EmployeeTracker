@@ -123,7 +123,7 @@ function init() {
 
 function viewDepartment () {
 
-    const sql = `SELECT * From Department`;
+    const sql = `SELECT * FROM department`;
     db.query (sql, (err,result) =>{
         if (err) throw err;
         console.table(result);
@@ -134,7 +134,7 @@ function viewDepartment () {
 //View Roles
 
 function viewRole () {
-    const sql = `SELECT role.id,title, department.name AS department,salary 
+    const sql = `SELECT role.id,title, department.name AS departments,salary 
     FROM role 
     LEFT JOIN department
     ON role.department_id = department.id
@@ -225,17 +225,17 @@ function addDepartment () {
                 
             ])
             .then(function (answers) {
-                const DepartmentId = result.filter((result) => result.name === answers.department) [0].id;
+                const DepartmentId = result.filter((result) => result.name === answers.departments) [0].id;
                 db.query(
                     'ALTER TABLE role AUTO_INCREMENT = 1; INSERT INTO role SET ?',
                     {
                         title: answers.role,
                         salary: answers.salary,
-                        department_id: DepartmentId
+                        department_id: DepartmentID
                     },
                     function (err) {
                         if (err) throw err;
-                        console.log(answers.role + ' Successfully Added To Roles Under' + answers.department);
+                        console.log(answers.role + ' Successfully Added To Roles Under' + answers.departments);
                         init();
                     }
                 );

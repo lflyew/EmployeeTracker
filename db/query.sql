@@ -1,6 +1,6 @@
 --View Roles
 
-SELECT role.id,title,  department.name AS departmnt,salary
+SELECT role.id,title,  department.name AS department,salary
 FROM role
 LEFT JOIN department
 ON role.department_id = department.id
@@ -33,7 +33,7 @@ WHERE employee.manager_id IS NOT NULL
 SELECT employee.id,employee.first_name,employee.last_name,title,name AS department,salary
 FROM employee
 LEFT JOIN role
-ON employee.role_id = role.id
+ON employee.role_id = role_id
 LEFT JOIN department
 ON role.department_id = department.id
 LEFT JOIN employee e
@@ -48,7 +48,7 @@ SELECT employee.id,employee.first_name,employee.last_name,title,name AS departme
 CONCAT(e.first_name,' ',e.last_name) as manager
 FROM employee
 LEFT JOIN role
-ON employee.role_id = role.id
+ON employee.role_id = role_id
 LEFT JOIN department
 ON role.department_id = department.id
 LEFT JOIN employee e
@@ -61,11 +61,13 @@ SELECT DISTINCT name from department
 SELECT name AS department, SUM(salary) AS utilized_budget
 FROM employee
 LEFT JOIN role
-ON employee.role_id = role.id
+ON employee.role_id = role_id
 LEFT JOIN department
 ON role.department_id = department.id
 WHERE name = department_name_input
 GROUP BY name
+
+--ALTER TABLE department AUTO_INCREMENT = 1
 
 ALTER TABLE department AUTO_INCREMENT = 1
 
@@ -80,12 +82,12 @@ DELETE FROM department WHERE name = user_input
 
 SELECT DISTINCT * FROM department
 
-ALTER TABLE department AUTO_INCREMENT = 1
+ALTER TABLE role AUTO_INCREMENT = 1
 INSERT INTO role AUTO_INCREMENT = 1
 INSERT INTO role SET
 title = user_input_role
 salary = user_input_salary
-department_id = user_choose_departID
+department_id = user_choose_departmentID
 
 --delete role
 
@@ -104,7 +106,7 @@ WHERE employee.manager_id IS NOT NULL
 INSERT INTO employee SET
 first_name = user_input_first_name,
 last_name = user_input_last_name,
-role_id = roleID(user_choose_role_id),
+role_id = roleId(user_choose_role_id),
 manager_id = managerID(user_choose_manager_id)
 
 --delete employee
