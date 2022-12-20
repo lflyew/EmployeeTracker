@@ -67,7 +67,7 @@ function init() {
                 addEmployee();
                 break;
 
-                case "View Departments":
+                case "View Department":
                 viewDepartment();
                 break;
 

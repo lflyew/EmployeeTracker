@@ -5,7 +5,7 @@ VALUES ("Sales"),
        ("Legal"),
        ("Executive");
 
-INSERT INTO roles (title, salary, department_id)
+INSERT INTO role (title, salary, department_id)
 VALUES ("Sales Lead", 100000, 1),
        ("Salesperson", 80000, 1),
        ("Lead Engineer", 150000, 2),
@@ -22,7 +22,7 @@ VALUES ("Spider", "Man", 1, 8),
        ("Iron", "Man", 2, 1),
        ("Captain", "America", 3, 8),
        ("Doctor", "Strange", 4, 7),
-       ("Black", "Panther", 5, 8),
+       ("Black", "Panther", 5, 8), 
        ("Captain", "Marvel", 6, 2),
        ("Dare", "Devil", 7, 8),
        ("Bucky", "Barnes", 8, 1),
